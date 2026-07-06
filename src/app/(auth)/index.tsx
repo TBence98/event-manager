@@ -1,3 +1,5 @@
+import { login } from "@/api/auth";
+import LoaderScreen from "@/components/loader-screen";
 import { Screen } from "@/components/screen";
 import { useAuth } from "@/store/auth";
 import { useState } from "react";
@@ -7,6 +9,26 @@ export default function LogInScreen() {
     const logIn = useAuth((state) => state.logIn);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    async function handleLogIn() {
+        setError(null);
+        setIsLoading(true);
+
+        try {
+            const { token } = await login(email, password);
+            logIn(token);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Ismeretlen hiba");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    if (isLoading) {
+        return <LoaderScreen />;
+    }
 
     return (
         <Screen edges={["top", "bottom"]}>
@@ -29,17 +51,23 @@ export default function LogInScreen() {
                             placeholder="jelszó"
                             value={password}
                             onChangeText={(text) => setPassword(text)}
+                            secureTextEntry
                         />
                     </View>
                 </View>
+                {error ? <Text style={styles.errorText}>{error}</Text> : null}
                 <Pressable
                     style={({ pressed }) => [
                         styles.logInButton,
                         pressed && styles.loginButtonPressed,
+                        isLoading && styles.loginButtonDisabled,
                     ]}
-                    onPress={() => logIn("test token")}
+                    onPress={handleLogIn}
+                    disabled={isLoading}
                 >
-                    <Text style={styles.logInButtonText}>Bejelentkezés</Text>
+                    <Text style={styles.logInButtonText}>
+                        {"Bejelentkezés"}
+                    </Text>
                 </Pressable>
             </View>
         </Screen>
@@ -63,5 +91,9 @@ const styles = StyleSheet.create({
     loginButtonPressed: {
         opacity: 0.6,
     },
+    loginButtonDisabled: {
+        opacity: 0.5,
+    },
     logInButtonText: { color: "#FFFFFF", fontSize: 20, fontWeight: 500 },
+    errorText: { marginTop: 16, color: "#CC0000", fontSize: 14 },
 });
