@@ -2,8 +2,17 @@ import { login } from "@/api/auth";
 import LoaderScreen from "@/components/loader-screen";
 import { Screen } from "@/components/screen";
 import { useAuth } from "@/store/auth";
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+    Alert,
+    Keyboard,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+} from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 
 export default function LogInScreen() {
     const logIn = useAuth((state) => state.logIn);
@@ -11,6 +20,13 @@ export default function LogInScreen() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (error) {
+            Alert.alert("Hibás email vagy jelszó!");
+            setError(null);
+        }
+    }, [error]);
 
     async function handleLogIn() {
         setError(null);
@@ -32,56 +48,59 @@ export default function LogInScreen() {
 
     return (
         <Screen edges={["top", "bottom"]}>
-            <View style={styles.container}>
-                <Text style={styles.title}>Belépés a Fiokódba</Text>
-                <View style={styles.textInputContainer}>
-                    <View style={styles.textInputLabelContainer}>
-                        <Text>Email</Text>
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder="email"
-                            value={email}
-                            onChangeText={(text) => setEmail(text)}
-                        />
-                    </View>
-                    <View style={styles.textInputLabelContainer}>
-                        <Text>Jelszó</Text>
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder="jelszó"
-                            value={password}
-                            onChangeText={(text) => setPassword(text)}
-                            secureTextEntry
-                        />
+            <Pressable style={styles.container} onPress={Keyboard.dismiss}>
+                <View style={styles.content}>
+                    <Text style={styles.title}>Belépés a Fiokódba</Text>
+                    <View style={styles.textInputContainer}>
+                        <View style={styles.textInputLabelContainer}>
+                            <Text>Email</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholder="email"
+                                value={email}
+                                onChangeText={(text) => setEmail(text)}
+                            />
+                        </View>
+                        <View style={styles.textInputLabelContainer}>
+                            <Text>Jelszó</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholder="jelszó"
+                                value={password}
+                                onChangeText={(text) => setPassword(text)}
+                                secureTextEntry
+                            />
+                        </View>
                     </View>
                 </View>
-                {error ? <Text style={styles.errorText}>{error}</Text> : null}
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.logInButton,
-                        pressed && styles.loginButtonPressed,
-                        isLoading && styles.loginButtonDisabled,
-                    ]}
-                    onPress={handleLogIn}
-                    disabled={isLoading}
-                >
-                    <Text style={styles.logInButtonText}>
-                        {"Bejelentkezés"}
-                    </Text>
-                </Pressable>
-            </View>
+                <KeyboardStickyView offset={{ opened: 16 }}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.logInButton,
+                            pressed && styles.loginButtonPressed,
+                            isLoading && styles.loginButtonDisabled,
+                        ]}
+                        onPress={handleLogIn}
+                        disabled={isLoading}
+                    >
+                        <Text style={styles.logInButtonText}>
+                            {"Bejelentkezés"}
+                        </Text>
+                    </Pressable>
+                </KeyboardStickyView>
+            </Pressable>
         </Screen>
     );
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1, paddingHorizontal: 16 },
+    content: { flex: 1 },
     title: { marginTop: 40, fontSize: 42, fontWeight: 700, width: "70%" },
     textInputContainer: { marginTop: 40, gap: 28 },
     textInputLabelContainer: { gap: 4 },
     textInput: { padding: 12, backgroundColor: "#DDDDDD", borderRadius: 8 },
     logInButton: {
-        marginTop: "auto",
         paddingVertical: 12,
         width: "100%",
         borderRadius: 20,
