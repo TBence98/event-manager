@@ -1,7 +1,23 @@
 import { Event } from "@/types/event";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+    ActivityIndicator,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 
-export default function EventCard({ event }: { event: Event }) {
+type EventCardProps = {
+    event: Event;
+    onDelete: (id: string) => void;
+    isDeleting?: boolean;
+};
+
+export default function EventCard({
+    event,
+    onDelete,
+    isDeleting = false,
+}: EventCardProps) {
     return (
         <View style={styles.container}>
             <Text style={styles.eventText}>{"Esemény: " + event.name}</Text>
@@ -28,10 +44,17 @@ export default function EventCard({ event }: { event: Event }) {
                     style={({ pressed }) => [
                         styles.actionButton,
                         styles.deleteButton,
-                        pressed && styles.actionButtonPressed,
+                        pressed && !isDeleting && styles.actionButtonPressed,
+                        isDeleting && styles.actionButtonDisabled,
                     ]}
+                    onPress={() => onDelete(event.id)}
+                    disabled={isDeleting}
                 >
-                    <Text style={styles.buttonText}>Törlés</Text>
+                    {isDeleting ? (
+                        <ActivityIndicator color="#FFFFFF" />
+                    ) : (
+                        <Text style={styles.buttonText}>Törlés</Text>
+                    )}
                 </Pressable>
             </View>
         </View>
@@ -59,7 +82,7 @@ const styles = StyleSheet.create({
     },
     actionButton: {
         minWidth: 120,
-        paddingVertical: 8,
+        minHeight: 36,
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
@@ -73,6 +96,9 @@ const styles = StyleSheet.create({
     },
     actionButtonPressed: {
         opacity: 0.6,
+    },
+    actionButtonDisabled: {
+        opacity: 0.7,
     },
     buttonText: {
         fontSize: 16,

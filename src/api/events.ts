@@ -89,6 +89,28 @@ export async function fetchEvents(
     return response;
 }
 
+/**
+ * Mock REST endpoint: DELETE /events/{id}
+ */
+export async function deleteEvent(id: string): Promise<void> {
+    console.log("[API] deleteEvent request", { id });
+
+    await simulateNetworkDelay();
+
+    const eventIndex = eventsStore.findIndex((event) => event.id === id);
+
+    if (eventIndex === -1) {
+        throw new EventsApiError(`Event not found: ${id}`);
+    }
+
+    eventsStore.splice(eventIndex, 1);
+
+    console.log("[API] deleteEvent success", {
+        id,
+        remaining: eventsStore.length,
+    });
+}
+
 /** Resets in-memory data to the original mock seed (useful during development). */
 export function resetEventsStore(): void {
     eventsStore = [...MOCK_EVENTS];

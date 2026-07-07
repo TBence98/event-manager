@@ -1,4 +1,4 @@
-import { fetchEvents } from "@/api/events";
+import { deleteEvent, fetchEvents } from "@/api/events";
 import EventCard from "@/components/EventCard";
 import LoaderScreen from "@/components/loader-screen";
 import { Screen } from "@/components/screen";
@@ -16,6 +16,7 @@ export default function EventsScreen() {
     const [hasMore, setHasMore] = useState(true);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const { bottom } = useSafeAreaInsets();
 
@@ -77,6 +78,37 @@ export default function EventsScreen() {
         loadEvents(nextCursor);
     }, [hasMore, isInitialLoading, isLoadingMore, loadEvents, nextCursor]);
 
+    const handleDelete = useCallback(async (id: string) => {
+        setDeletingEventId(id);
+
+        try {
+            await deleteEvent(id);
+
+            setEvents((currentEvents) => {
+                const remainingEvents = currentEvents.filter(
+                    (event) => event.id !== id,
+                );
+
+                setNextCursor((currentCursor) => {
+                    if (currentCursor !== id) {
+                        return currentCursor;
+                    }
+
+                    return remainingEvents.at(-1)?.id ?? null;
+                });
+
+                return remainingEvents;
+            });
+        } catch (err) {
+            Alert.alert(
+                "Törlés sikertelen",
+                err instanceof Error ? err.message : "Ismeretlen hiba",
+            );
+        } finally {
+            setDeletingEventId(null);
+        }
+    }, []);
+
     if (isInitialLoading) {
         return <LoaderScreen />;
     }
@@ -86,7 +118,13 @@ export default function EventsScreen() {
             <FlashList
                 data={events}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <EventCard event={item} />}
+                renderItem={({ item }) => (
+                    <EventCard
+                        event={item}
+                        onDelete={handleDelete}
+                        isDeleting={deletingEventId === item.id}
+                    />
+                )}
                 contentContainerStyle={[
                     styles.listContentContainerStyle,
                     {
