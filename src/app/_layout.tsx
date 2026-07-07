@@ -23,7 +23,10 @@ export default function StackLayout() {
                 </Stack.Protected>
 
                 <Stack.Protected guard={isLoggedIn}>
-                    <Stack.Screen name="events" />
+                    <Stack.Screen
+                        name="events"
+                        options={{ headerTitle: "Események" }}
+                    />
                 </Stack.Protected>
             </Stack>
         </KeyboardProvider>
