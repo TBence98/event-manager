@@ -145,6 +145,9 @@ export default function EventsScreen() {
                 )}
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.4}
+                ListHeaderComponent={() => (
+                    <Text style={styles.title}>Események</Text>
+                )}
                 ListFooterComponent={
                     isLoadingMore ? (
                         <ActivityIndicator
@@ -169,6 +172,12 @@ export default function EventsScreen() {
 
 const styles = StyleSheet.create({
     container: { paddingHorizontal: 16 },
+    title: {
+        fontSize: 30,
+        fontWeight: 700,
+        marginBottom: 32,
+        textAlign: "center",
+    },
     listContentContainerStyle: { paddingTop: 30 },
     itemSeparator: { height: 16 },
     footerLoaderStyle: { marginTop: 20 },

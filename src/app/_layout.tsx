@@ -3,6 +3,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import { AnimatedSplashOverlay } from "@/components/animated-icon";
+import HeaderLogOutButton from "@/components/header-log-out-button";
 import { useAuth } from "@/store/auth";
 
 SplashScreen.preventAutoHideAsync();
@@ -25,7 +26,10 @@ export default function StackLayout() {
                 <Stack.Protected guard={isLoggedIn}>
                     <Stack.Screen
                         name="events"
-                        options={{ headerTitle: "Események" }}
+                        options={{
+                            headerTitle: "",
+                            headerLeft: () => <HeaderLogOutButton />,
+                        }}
                     />
                 </Stack.Protected>
             </Stack>
