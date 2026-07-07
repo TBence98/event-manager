@@ -1,4 +1,5 @@
 import { Event } from "@/types/event";
+import { useRouter } from "expo-router";
 import {
     ActivityIndicator,
     Pressable,
@@ -18,6 +19,8 @@ export default function EventCard({
     onDelete,
     isDeleting = false,
 }: EventCardProps) {
+    const router = useRouter();
+
     return (
         <View style={styles.container}>
             <Text style={styles.eventText}>{"Esemény: " + event.name}</Text>
@@ -32,6 +35,9 @@ export default function EventCard({
             </Text>
             <View style={styles.buttonContainer}>
                 <Pressable
+                    onPress={() =>
+                        router.navigate(`/events/edit-event/${event.id}`)
+                    }
                     style={({ pressed }) => [
                         styles.actionButton,
                         styles.editButton,

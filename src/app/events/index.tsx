@@ -4,8 +4,16 @@ import LoaderScreen from "@/components/loader-screen";
 import { Screen } from "@/components/screen";
 import type { Event } from "@/types/event";
 import { FlashList } from "@shopify/flash-list";
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const PAGE_SIZE = 10;
@@ -19,6 +27,7 @@ export default function EventsScreen() {
     const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const { bottom } = useSafeAreaInsets();
+    const router = useRouter();
 
     useEffect(() => {
         if (error) {
@@ -145,6 +154,15 @@ export default function EventsScreen() {
                     ) : null
                 }
             />
+            <Pressable
+                onPress={() => router.navigate("/events/create-event")}
+                style={({ pressed }) => [
+                    styles.addButton,
+                    pressed && styles.pressedButton,
+                ]}
+            >
+                <Text style={styles.addButtonText}>+</Text>
+            </Pressable>
         </Screen>
     );
 }
@@ -154,4 +172,22 @@ const styles = StyleSheet.create({
     listContentContainerStyle: { paddingTop: 30 },
     itemSeparator: { height: 16 },
     footerLoaderStyle: { marginTop: 20 },
+    addButton: {
+        position: "absolute",
+        bottom: 40,
+        right: 40,
+        minHeight: 54,
+        minWidth: 54,
+        borderRadius: 30,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "orange",
+    },
+    addButtonText: {
+        fontSize: 34,
+        fontWeight: 700,
+    },
+    pressedButton: {
+        opacity: 0.6,
+    },
 });
