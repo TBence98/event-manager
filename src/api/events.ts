@@ -121,25 +121,6 @@ export async function createEvent(payload: CreateEventPayload): Promise<Event> {
 }
 
 /**
- * Mock REST endpoint: GET /events/{id}
- */
-export async function fetchEventById(id: string): Promise<Event> {
-    console.log("[API] fetchEventById request", { id });
-
-    await simulateNetworkDelay();
-
-    const event = eventsStore.find((item) => item.id === id);
-
-    if (!event) {
-        throw new EventsApiError(`Event not found: ${id}`);
-    }
-
-    console.log("[API] fetchEventById success", { id });
-
-    return event;
-}
-
-/**
  * Mock REST endpoint: PUT /events/{id}
  */
 export async function updateEvent(
@@ -188,10 +169,4 @@ export async function deleteEvent(id: string): Promise<void> {
         id,
         remaining: eventsStore.length,
     });
-}
-
-/** Resets in-memory data to the original mock seed (useful during development). */
-export function resetEventsStore(): void {
-    eventsStore = [...MOCK_EVENTS];
-    console.log("[API] events store reset", { total: eventsStore.length });
 }
