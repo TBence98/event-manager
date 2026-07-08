@@ -1,3 +1,4 @@
+import { useEvents } from "@/store/events";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -24,10 +25,12 @@ export const useAuth = create<AuthState & AuthActions>()(
                 state.token = token;
                 state.isLoggedIn = true;
             }),
-        logOut: () =>
+        logOut: () => {
             set((state) => {
                 state.token = null;
                 state.isLoggedIn = false;
-            }),
+            });
+            useEvents.getState().reset();
+        },
     })),
 );
