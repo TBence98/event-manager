@@ -1,9 +1,11 @@
 import {
     createEvent as createEventApi,
     deleteEvent as deleteEventApi,
+    fetchEventById as fetchEventByIdApi,
     fetchEvents,
+    updateEvent as updateEventApi,
 } from "@/api/events";
-import type { CreateEventPayload, Event } from "@/types/event";
+import type { CreateEventPayload, Event, UpdateEventPayload } from "@/types/event";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -24,6 +26,8 @@ type EventsActions = {
     loadMore: () => Promise<void>;
     deleteEventById: (id: string) => Promise<void>;
     addEvent: (payload: CreateEventPayload) => Promise<Event>;
+    fetchEventById: (id: string) => Promise<Event>;
+    updateEventById: (id: string, payload: UpdateEventPayload) => Promise<Event>;
     prependEvent: (event: Event) => void;
     updateEventInList: (event: Event) => void;
     clearError: () => void;
@@ -142,6 +146,24 @@ export const useEvents = create<EventsState & EventsActions>()(
 
                 set((state) => {
                     state.events.unshift(event);
+                });
+
+                return event;
+            },
+
+            fetchEventById: (id: string) => fetchEventByIdApi(id),
+
+            updateEventById: async (id: string, payload: UpdateEventPayload) => {
+                const event = await updateEventApi(id, payload);
+
+                set((state) => {
+                    const index = state.events.findIndex(
+                        (item) => item.id === event.id,
+                    );
+
+                    if (index !== -1) {
+                        state.events[index] = event;
+                    }
                 });
 
                 return event;

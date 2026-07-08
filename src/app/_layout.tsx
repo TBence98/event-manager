@@ -35,6 +35,10 @@ export default function StackLayout() {
                         name="events/create-event"
                         options={{ headerTitle: "" }}
                     />
+                    <Stack.Screen
+                        name="events/edit-event/[id]"
+                        options={{ headerTitle: "" }}
+                    />
                 </Stack.Protected>
             </Stack>
         </KeyboardProvider>

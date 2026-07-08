@@ -4,6 +4,7 @@ import type {
     Event,
     FetchEventsParams,
     FetchEventsResponse,
+    UpdateEventPayload,
 } from "@/types/event";
 
 const MOCK_NETWORK_DELAY_MS = 600;
@@ -119,6 +120,54 @@ export async function createEvent(
     console.log("[API] createEvent success", { id: event.id });
 
     return event;
+}
+
+/**
+ * Mock REST endpoint: GET /events/{id}
+ */
+export async function fetchEventById(id: string): Promise<Event> {
+    console.log("[API] fetchEventById request", { id });
+
+    await simulateNetworkDelay();
+
+    const event = eventsStore.find((item) => item.id === id);
+
+    if (!event) {
+        throw new EventsApiError(`Event not found: ${id}`);
+    }
+
+    console.log("[API] fetchEventById success", { id });
+
+    return event;
+}
+
+/**
+ * Mock REST endpoint: PUT /events/{id}
+ */
+export async function updateEvent(
+    id: string,
+    payload: UpdateEventPayload,
+): Promise<Event> {
+    console.log("[API] updateEvent request", { id, payload });
+
+    await simulateNetworkDelay();
+
+    const eventIndex = eventsStore.findIndex((event) => event.id === id);
+
+    if (eventIndex === -1) {
+        throw new EventsApiError(`Event not found: ${id}`);
+    }
+
+    const updatedEvent: Event = {
+        id,
+        ...payload,
+    };
+
+    eventsStore[eventIndex] = updatedEvent;
+
+    console.log("[API] updateEvent success", { id });
+
+    return updatedEvent;
 }
 
 /**
