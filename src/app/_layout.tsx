@@ -27,7 +27,9 @@ export default function StackLayout() {
                     <Stack.Screen
                         name="events"
                         options={{
-                            headerTitle: "",
+                            headerTitle: "Events",
+                            headerShadowVisible: false,
+                            headerStyle: { backgroundColor: "#F2F2F7" },
                             headerLeft: () => <HeaderLogOutButton />,
                         }}
                     />

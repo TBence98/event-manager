@@ -14,6 +14,22 @@ type EventCardProps = {
     isDeleting?: boolean;
 };
 
+type EventDetailRowProps = {
+    label: string;
+    value: string;
+};
+
+function EventDetailRow({ label, value }: EventDetailRowProps) {
+    return (
+        <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>{label}</Text>
+            <Text style={styles.detailValue} numberOfLines={1}>
+                {value}
+            </Text>
+        </View>
+    );
+}
+
 export default function EventCard({
     event,
     onDelete,
@@ -23,16 +39,21 @@ export default function EventCard({
 
     return (
         <View style={styles.container}>
-            <Text style={styles.eventText}>{"Event: " + event.name}</Text>
-            <Text style={styles.eventText}>
-                {"Location: " + event.location}
+            <Text style={styles.eventName} numberOfLines={2}>
+                {event.name}
             </Text>
-            <Text style={styles.eventText}>
-                {"Country: " + (event.country ?? "-")}
-            </Text>
-            <Text style={styles.eventText}>
-                {"Capacity: " + (event.capacity ?? "-")}
-            </Text>
+
+            <View style={styles.details}>
+                <EventDetailRow label="Location" value={event.location} />
+                <EventDetailRow label="Country" value={event.country ?? "—"} />
+                <EventDetailRow
+                    label="Capacity"
+                    value={
+                        event.capacity != null ? String(event.capacity) : "—"
+                    }
+                />
+            </View>
+
             <View style={styles.buttonContainer}>
                 <Pressable
                     onPress={() =>
@@ -44,7 +65,7 @@ export default function EventCard({
                         pressed && styles.actionButtonPressed,
                     ]}
                 >
-                    <Text style={styles.buttonText}>Edit</Text>
+                    <Text style={styles.editButtonText}>Edit</Text>
                 </Pressable>
                 <Pressable
                     style={({ pressed }) => [
@@ -57,9 +78,9 @@ export default function EventCard({
                     disabled={isDeleting}
                 >
                     {isDeleting ? (
-                        <ActivityIndicator color="#FFFFFF" />
+                        <ActivityIndicator color="#FF3B30" size="small" />
                     ) : (
-                        <Text style={styles.buttonText}>Delete</Text>
+                        <Text style={styles.deleteButtonText}>Delete</Text>
                     )}
                 </Pressable>
             </View>
@@ -70,44 +91,70 @@ export default function EventCard({
 const styles = StyleSheet.create({
     container: {
         width: "100%",
-        padding: 16,
+        padding: 20,
         borderRadius: 16,
         backgroundColor: "#FFFFFF",
-        gap: 8,
+        gap: 16,
+        boxShadow: "0px 2px 8px 0px rgba(0, 0, 0, 0.0.06)",
     },
-    eventText: {
-        fontSize: 16,
+    eventName: {
+        fontSize: 20,
+        fontWeight: "600",
+        color: "#1C1C1E",
+        lineHeight: 26,
+    },
+    details: {
+        gap: 10,
+    },
+    detailRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12,
+    },
+    detailLabel: {
+        width: 72,
+        fontSize: 14,
+        color: "#8E8E93",
+    },
+    detailValue: {
+        flex: 1,
+        fontSize: 15,
+        color: "#1C1C1E",
     },
     buttonContainer: {
-        marginHorizontal: 20,
-        marginTop: 12,
         flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 40,
+        gap: 10,
+        marginTop: 4,
     },
     actionButton: {
-        minWidth: 120,
-        minHeight: 36,
-        borderRadius: 12,
+        flex: 1,
+        minHeight: 40,
+        borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "red",
     },
     editButton: {
-        backgroundColor: "#007AFF",
+        backgroundColor: "#1C1C1E",
     },
     deleteButton: {
-        backgroundColor: "#FF3B30",
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "#FF3B30",
     },
     actionButtonPressed: {
-        opacity: 0.6,
-    },
-    actionButtonDisabled: {
         opacity: 0.7,
     },
-    buttonText: {
-        fontSize: 16,
-        fontWeight: 600,
+    actionButtonDisabled: {
+        opacity: 0.6,
+    },
+    editButtonText: {
+        fontSize: 15,
+        fontWeight: "600",
+        color: "#FFFFFF",
+    },
+    deleteButtonText: {
+        fontSize: 15,
+        fontWeight: "600",
+        color: "#FF3B30",
     },
 });

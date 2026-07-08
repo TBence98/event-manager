@@ -16,17 +16,19 @@ export default function HeaderLogOutButton() {
 
 const styles = StyleSheet.create({
     button: {
-        paddingVertical: 4,
-        paddingHorizontal: 8,
-        borderRadius: 12,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 16,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#DDDDDD",
+        backgroundColor: "#E5E5EA",
     },
     text: {
-        fontSize: 16,
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#1C1C1E",
     },
     pressed: {
-        opacity: 0.6,
+        opacity: 0.7,
     },
 });

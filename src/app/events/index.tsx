@@ -58,6 +58,9 @@ export default function EventsScreen() {
         return <LoaderScreen />;
     }
 
+    const eventCountLabel =
+        events.length === 1 ? "1 event" : `${events.length} events`;
+
     return (
         <Screen style={styles.container}>
             <FlashList
@@ -72,22 +75,38 @@ export default function EventsScreen() {
                 )}
                 contentContainerStyle={[
                     styles.listContentContainerStyle,
-                    {
-                        paddingBottom: bottom,
-                    },
+                    events.length === 0 && styles.emptyListContent,
+                    { paddingBottom: bottom + 96 },
                 ]}
                 ItemSeparatorComponent={() => (
                     <View style={styles.itemSeparator} />
                 )}
                 onEndReached={loadMore}
                 onEndReachedThreshold={0.4}
-                ListHeaderComponent={() => (
-                    <Text style={styles.title}>Events</Text>
+                ListHeaderComponent={
+                    events.length > 0
+                        ? () => (
+                              <Text style={styles.subtitle}>
+                                  {eventCountLabel}
+                              </Text>
+                          )
+                        : null
+                }
+                ListEmptyComponent={() => (
+                    <View style={styles.emptyState}>
+                        <Text style={styles.emptyStateTitle}>
+                            No events yet
+                        </Text>
+                        <Text style={styles.emptyStateText}>
+                            Tap the + button to create your first event.
+                        </Text>
+                    </View>
                 )}
                 ListFooterComponent={
                     isLoadingMore ? (
                         <ActivityIndicator
                             size="large"
+                            color="#1C1C1E"
                             style={styles.footerLoaderStyle}
                         />
                     ) : null
@@ -97,8 +116,11 @@ export default function EventsScreen() {
                 onPress={() => router.navigate("/events/create-event")}
                 style={({ pressed }) => [
                     styles.addButton,
+                    { bottom: bottom + 24 },
                     pressed && styles.pressedButton,
                 ]}
+                accessibilityRole="button"
+                accessibilityLabel="Create event"
             >
                 <Text style={styles.addButtonText}>+</Text>
             </Pressable>
@@ -107,32 +129,62 @@ export default function EventsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { paddingHorizontal: 16 },
-    title: {
-        fontSize: 30,
-        fontWeight: 700,
-        marginBottom: 32,
-        textAlign: "center",
+    container: {
+        paddingHorizontal: 20,
+        backgroundColor: "#F2F2F7",
     },
-    listContentContainerStyle: { paddingTop: 30 },
-    itemSeparator: { height: 16 },
-    footerLoaderStyle: { marginTop: 20 },
-    addButton: {
-        position: "absolute",
-        bottom: 40,
-        right: 40,
-        minHeight: 54,
-        minWidth: 54,
-        borderRadius: 30,
+    subtitle: {
+        fontSize: 15,
+        color: "#8E8E93",
+        marginBottom: 16,
+    },
+    listContentContainerStyle: {
+        paddingTop: 8,
+    },
+    emptyListContent: {
+        flexGrow: 1,
+    },
+    itemSeparator: { height: 24 },
+    emptyState: {
+        flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "orange",
+        paddingHorizontal: 32,
+        paddingTop: 80,
+    },
+    emptyStateTitle: {
+        fontSize: 20,
+        fontWeight: "600",
+        color: "#1C1C1E",
+        marginBottom: 8,
+    },
+    emptyStateText: {
+        fontSize: 16,
+        color: "#8E8E93",
+        textAlign: "center",
+        lineHeight: 22,
+    },
+    footerLoaderStyle: { marginTop: 20, marginBottom: 8 },
+    addButton: {
+        position: "absolute",
+        right: 24,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#1C1C1E",
+        boxShadow: "0px 4px 8px 0px rgba(0, 0, 0, 0.2)",
     },
     addButtonText: {
-        fontSize: 34,
-        fontWeight: 700,
+        fontSize: 32,
+        fontWeight: "400",
+        color: "#FFFFFF",
+        lineHeight: 34,
+        marginTop: -2,
     },
     pressedButton: {
-        opacity: 0.6,
+        opacity: 0.75,
+        transform: [{ scale: 0.96 }],
     },
 });
