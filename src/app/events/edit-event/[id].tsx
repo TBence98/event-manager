@@ -3,8 +3,13 @@ import { Screen } from "@/components/screen";
 import { useEvents } from "@/store/events";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
-import { KeyboardStickyView } from "react-native-keyboard-controller";
+import { Alert, StyleSheet, Text } from "react-native";
+import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
+import Animated, {
+    interpolate,
+    useAnimatedStyle,
+    useDerivedValue,
+} from "react-native-reanimated";
 
 export default function EditEventScreen() {
     const router = useRouter();
@@ -14,6 +19,16 @@ export default function EditEventScreen() {
     );
     const updateEventById = useEvents((state) => state.updateEventById);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { progress } = useReanimatedKeyboardAnimation();
+
+    const offset = useDerivedValue(() => {
+        return interpolate(progress.value, [0, 1], [0, 72]);
+    });
+
+    const keyboardAwareStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: -offset.value }],
+    }));
 
     useEffect(() => {
         if (!id) {
@@ -58,22 +73,20 @@ export default function EditEventScreen() {
 
     return (
         <Screen edges={["bottom"]} style={styles.container}>
-            <View style={{ flex: 1, justifyContent: "space-between" }}>
+            <Animated.View style={keyboardAwareStyle}>
                 <Text style={styles.title}>Edit event</Text>
-                <KeyboardStickyView offset={{ opened: 16 }}>
-                    <EventForm
-                        key={event.id}
-                        onCancel={router.back}
-                        onSubmit={handleSubmit}
-                        submitButtonText="Save event"
-                        loading={isSubmitting}
-                        name={event.name}
-                        city={event.location}
-                        country={event.country}
-                        capacity={event.capacity}
-                    />
-                </KeyboardStickyView>
-            </View>
+                <EventForm
+                    key={event.id}
+                    onCancel={router.back}
+                    onSubmit={handleSubmit}
+                    submitButtonText="Save event"
+                    loading={isSubmitting}
+                    name={event.name}
+                    city={event.location}
+                    country={event.country}
+                    capacity={event.capacity}
+                />
+            </Animated.View>
         </Screen>
     );
 }
