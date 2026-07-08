@@ -15,7 +15,7 @@ export async function login(
 ): Promise<LoginResponse> {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    if (email === "test@gmail.com" && password === "123456") {
+    if (email === "test@gmail.com" && password === "Test123") {
         return { token: "mock-token-abc123" };
     }
 

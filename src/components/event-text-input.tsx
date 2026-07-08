@@ -14,6 +14,8 @@ type EventTextInputProps = {
     onTextChange: (text: string) => void;
     style?: StyleProp<ViewStyle>;
     keyboardType?: KeyboardTypeOptions;
+    error?: string;
+    maxLength?: number;
 };
 
 export default function EventTextInput({
@@ -22,16 +24,20 @@ export default function EventTextInput({
     onTextChange,
     style,
     keyboardType,
+    error,
+    maxLength,
 }: EventTextInputProps) {
     return (
         <View style={style}>
             <Text>{label}</Text>
             <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, error && styles.textInputError]}
                 value={inputValue}
                 onChangeText={onTextChange}
                 keyboardType={keyboardType}
+                maxLength={maxLength}
             />
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
     );
 }
@@ -42,5 +48,13 @@ const styles = StyleSheet.create({
         borderColor: "#898989",
         paddingHorizontal: 8,
         paddingVertical: 12,
+    },
+    textInputError: {
+        borderColor: "#CC0000",
+    },
+    errorText: {
+        marginTop: 4,
+        color: "#CC0000",
+        fontSize: 13,
     },
 });

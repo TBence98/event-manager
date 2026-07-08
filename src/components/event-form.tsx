@@ -1,3 +1,4 @@
+import { validateEventForm, type EventFormField } from "@/utils/validation";
 import { useState } from "react";
 import {
     ActivityIndicator,
@@ -39,38 +40,89 @@ export default function EventForm({
     const [nameVal, setNameVal] = useState(name);
     const [cityVal, setCityVal] = useState(city);
     const [countryVal, setCountryVal] = useState(country);
-    const [capacityVal, setCapacityVal] = useState(capacity);
+    const [capacityVal, setCapacityVal] = useState(
+        !capacity ? "" : String(capacity),
+    );
+    const [errors, setErrors] = useState<
+        Partial<Record<EventFormField, string>>
+    >({});
+
+    function clearFieldError(field: EventFormField) {
+        setErrors((current) => {
+            if (!current[field]) {
+                return current;
+            }
+
+            const next = { ...current };
+            delete next[field];
+            return next;
+        });
+    }
+
+    function handleSubmit() {
+        const result = validateEventForm({
+            name: nameVal,
+            location: cityVal,
+            country: countryVal,
+            capacity: capacityVal,
+        });
+
+        if (!result.isValid || !result.values) {
+            setErrors(result.errors);
+            return;
+        }
+
+        setErrors({});
+        onSubmit(result.values);
+    }
 
     return (
         <View style={styles.container}>
             <EventTextInput
                 label="Name"
                 inputValue={nameVal}
-                onTextChange={setNameVal}
+                onTextChange={(text) => {
+                    setNameVal(text);
+                    clearFieldError("name");
+                }}
+                error={errors.name}
                 style={styles.textInputContainer}
             />
             <Text style={styles.placeText}>PLACE</Text>
             <EventTextInput
                 label="City"
                 inputValue={cityVal}
-                onTextChange={setCityVal}
+                onTextChange={(text) => {
+                    setCityVal(text);
+                    clearFieldError("location");
+                }}
+                error={errors.location}
+                maxLength={100}
                 style={styles.textInputContainer}
             />
             <EventTextInput
                 label="Country"
                 inputValue={countryVal}
-                onTextChange={setCountryVal}
+                onTextChange={(text) => {
+                    setCountryVal(text);
+                    clearFieldError("country");
+                }}
+                error={errors.country}
                 style={styles.textInputContainer}
             />
             <EventTextInput
                 label="Capacity"
-                inputValue={numToString(capacityVal)}
-                onTextChange={(val) => setCapacityVal(stringToNumber(val))}
+                inputValue={capacityVal}
+                onTextChange={(text) => {
+                    setCapacityVal(text);
+                    clearFieldError("capacity");
+                }}
+                error={errors.capacity}
                 style={{
                     ...styles.textInputContainer,
                     ...styles.capacityTextInputContainer,
                 }}
-                keyboardType="decimal-pad"
+                keyboardType="number-pad"
             />
             <View style={styles.buttonContainer}>
                 <Pressable
@@ -83,14 +135,7 @@ export default function EventForm({
                     <Text style={styles.buttonText}>Cancel</Text>
                 </Pressable>
                 <Pressable
-                    onPress={() =>
-                        onSubmit({
-                            name: nameVal,
-                            location: cityVal,
-                            country: countryVal,
-                            capacity: capacityVal,
-                        })
-                    }
+                    onPress={handleSubmit}
                     disabled={loading}
                     style={({ pressed }) => [
                         styles.button,
@@ -139,18 +184,3 @@ const styles = StyleSheet.create({
     submitButtonText: { color: "#FFFFFF" },
     pressed: { opacity: 0.6 },
 });
-
-function stringToNumber(str?: string) {
-    if (!str) {
-        return;
-    }
-
-    return +str;
-}
-
-function numToString(num?: number) {
-    if (!num) {
-        return;
-    }
-    return String(num);
-}
