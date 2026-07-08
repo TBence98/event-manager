@@ -1,11 +1,10 @@
-import { deleteEvent, fetchEvents } from "@/api/events";
 import EventCard from "@/components/EventCard";
 import LoaderScreen from "@/components/loader-screen";
 import { Screen } from "@/components/screen";
-import type { Event } from "@/types/event";
+import { useEvents } from "@/store/events";
 import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -16,107 +15,44 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const PAGE_SIZE = 10;
-
 export default function EventsScreen() {
-    const [events, setEvents] = useState<Event[]>([]);
-    const [nextCursor, setNextCursor] = useState<string | null>(null);
-    const [hasMore, setHasMore] = useState(true);
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const events = useEvents((state) => state.events);
+    const isInitialLoading = useEvents((state) => state.isInitialLoading);
+    const isLoadingMore = useEvents((state) => state.isLoadingMore);
+    const deletingEventId = useEvents((state) => state.deletingEventId);
+    const error = useEvents((state) => state.error);
+    const loadInitial = useEvents((state) => state.loadInitial);
+    const loadMore = useEvents((state) => state.loadMore);
+    const deleteEventById = useEvents((state) => state.deleteEventById);
+    const clearError = useEvents((state) => state.clearError);
+
     const { bottom } = useSafeAreaInsets();
     const router = useRouter();
 
     useEffect(() => {
         if (error) {
             Alert.alert("Az események betöltése sikertelen");
-            setError(null);
+            clearError();
         }
-    }, [error]);
-
-    const isFetchingRef = useRef(false);
-
-    const loadEvents = useCallback(async (cursor?: string) => {
-        if (isFetchingRef.current) {
-            return;
-        }
-
-        isFetchingRef.current = true;
-        setError(null);
-
-        const isFirstPage = cursor === undefined;
-        if (isFirstPage) {
-            setIsInitialLoading(true);
-        } else {
-            setIsLoadingMore(true);
-        }
-
-        try {
-            const response = await fetchEvents({
-                limit: PAGE_SIZE,
-                cursor,
-            });
-
-            setEvents((currentEvents) =>
-                isFirstPage
-                    ? response.events
-                    : [...currentEvents, ...response.events],
-            );
-            setNextCursor(response.nextCursor);
-            setHasMore(response.hasMore);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Unknown error");
-        } finally {
-            isFetchingRef.current = false;
-            setIsInitialLoading(false);
-            setIsLoadingMore(false);
-        }
-    }, []);
+    }, [clearError, error]);
 
     useEffect(() => {
-        loadEvents();
-    }, [loadEvents]);
+        loadInitial();
+    }, [loadInitial]);
 
-    const handleLoadMore = useCallback(() => {
-        if (!hasMore || isLoadingMore || isInitialLoading || !nextCursor) {
-            return;
-        }
-
-        loadEvents(nextCursor);
-    }, [hasMore, isInitialLoading, isLoadingMore, loadEvents, nextCursor]);
-
-    const handleDelete = useCallback(async (id: string) => {
-        setDeletingEventId(id);
-
-        try {
-            await deleteEvent(id);
-
-            setEvents((currentEvents) => {
-                const remainingEvents = currentEvents.filter(
-                    (event) => event.id !== id,
+    const handleDelete = useCallback(
+        async (id: string) => {
+            try {
+                await deleteEventById(id);
+            } catch (err) {
+                Alert.alert(
+                    "Törlés sikertelen",
+                    err instanceof Error ? err.message : "Ismeretlen hiba",
                 );
-
-                setNextCursor((currentCursor) => {
-                    if (currentCursor !== id) {
-                        return currentCursor;
-                    }
-
-                    return remainingEvents.at(-1)?.id ?? null;
-                });
-
-                return remainingEvents;
-            });
-        } catch (err) {
-            Alert.alert(
-                "Törlés sikertelen",
-                err instanceof Error ? err.message : "Ismeretlen hiba",
-            );
-        } finally {
-            setDeletingEventId(null);
-        }
-    }, []);
+            }
+        },
+        [deleteEventById],
+    );
 
     if (isInitialLoading) {
         return <LoaderScreen />;
@@ -143,7 +79,7 @@ export default function EventsScreen() {
                 ItemSeparatorComponent={() => (
                     <View style={styles.itemSeparator} />
                 )}
-                onEndReached={handleLoadMore}
+                onEndReached={loadMore}
                 onEndReachedThreshold={0.4}
                 ListHeaderComponent={() => (
                     <Text style={styles.title}>Események</Text>
