@@ -3,7 +3,8 @@ import { Screen } from "@/components/screen";
 import { useEvents } from "@/store/events";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, StyleSheet, Text } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 
 export default function CreateEventScreen() {
     const router = useRouter();
@@ -29,13 +30,17 @@ export default function CreateEventScreen() {
 
     return (
         <Screen edges={["bottom"]} style={styles.container}>
-            <Text style={styles.title}>New event</Text>
-            <EventForm
-                onCancel={router.back}
-                onSubmit={handleSubmit}
-                submitButtonText="Add event"
-                loading={loading}
-            />
+            <View style={{ flex: 1, justifyContent: "space-between" }}>
+                <Text style={styles.title}>New event</Text>
+                <KeyboardStickyView offset={{ opened: 16 }}>
+                    <EventForm
+                        onCancel={router.back}
+                        onSubmit={handleSubmit}
+                        submitButtonText="Add event"
+                        loading={loading}
+                    />
+                </KeyboardStickyView>
+            </View>
         </Screen>
     );
 }

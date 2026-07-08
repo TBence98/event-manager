@@ -2,6 +2,7 @@ import { validateEventForm, type EventFormField } from "@/utils/validation";
 import { useState } from "react";
 import {
     ActivityIndicator,
+    Keyboard,
     Pressable,
     StyleSheet,
     Text,
@@ -77,7 +78,7 @@ export default function EventForm({
     }
 
     return (
-        <View style={styles.container}>
+        <Pressable style={styles.container} onPress={Keyboard.dismiss}>
             <EventTextInput
                 label="Name"
                 inputValue={nameVal}
@@ -154,7 +155,7 @@ export default function EventForm({
                     )}
                 </Pressable>
             </View>
-        </View>
+        </Pressable>
     );
 }
 
