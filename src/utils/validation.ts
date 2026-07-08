@@ -25,11 +25,11 @@ export function validateEmail(email: string): string | undefined {
     const trimmed = email.trim();
 
     if (!trimmed) {
-        return "Az email megadása kötelező";
+        return "Email is required";
     }
 
     if (!EMAIL_PATTERN.test(trimmed)) {
-        return "Érvénytelen email cím";
+        return "Invalid email address";
     }
 
     return undefined;
@@ -37,19 +37,19 @@ export function validateEmail(email: string): string | undefined {
 
 export function validatePassword(password: string): string | undefined {
     if (!password) {
-        return "A jelszó megadása kötelező";
+        return "Password is required";
     }
 
     if (!/[a-z]/.test(password)) {
-        return "A jelszónak tartalmaznia kell kisbetűt";
+        return "Password must contain a lowercase letter";
     }
 
     if (!/[A-Z]/.test(password)) {
-        return "A jelszónak tartalmaznia kell nagybetűt";
+        return "Password must contain an uppercase letter";
     }
 
     if (!/\d/.test(password)) {
-        return "A jelszónak tartalmaznia kell számot";
+        return "Password must contain a number";
     }
 
     return undefined;

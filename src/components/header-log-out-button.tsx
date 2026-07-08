@@ -9,7 +9,7 @@ export default function HeaderLogOutButton() {
             onPress={logOut}
             style={({ pressed }) => [styles.button, pressed && styles.pressed]}
         >
-            <Text style={styles.text}>Kijelentkezés</Text>
+            <Text style={styles.text}>Log out</Text>
         </Pressable>
     );
 }

@@ -28,7 +28,7 @@ export default function LogInScreen() {
 
     useEffect(() => {
         if (authError) {
-            Alert.alert("Hibás email vagy jelszó!");
+            Alert.alert("Wrong email or password!");
             setAuthError(null);
         }
     }, [authError]);
@@ -52,7 +52,7 @@ export default function LogInScreen() {
             );
             logIn(token);
         } catch (err) {
-            setAuthError(err instanceof Error ? err.message : "Ismeretlen hiba");
+            setAuthError(err instanceof Error ? err.message : "Unknown error");
         } finally {
             setIsLoading(false);
         }
@@ -66,7 +66,7 @@ export default function LogInScreen() {
         <Screen edges={["top", "bottom"]}>
             <Pressable style={styles.container} onPress={Keyboard.dismiss}>
                 <View style={styles.content}>
-                    <Text style={styles.title}>Belépés a Fiokódba</Text>
+                    <Text style={styles.title}>Log in to your account</Text>
                     <View style={styles.textInputContainer}>
                         <View style={styles.textInputLabelContainer}>
                             <Text>Email</Text>
@@ -97,13 +97,13 @@ export default function LogInScreen() {
                             ) : null}
                         </View>
                         <View style={styles.textInputLabelContainer}>
-                            <Text>Jelszó</Text>
+                            <Text>Password</Text>
                             <TextInput
                                 style={[
                                     styles.textInput,
                                     fieldErrors.password && styles.textInputError,
                                 ]}
-                                placeholder="jelszó"
+                                placeholder="password"
                                 value={password}
                                 onChangeText={(text) => {
                                     setPassword(text);
@@ -135,7 +135,7 @@ export default function LogInScreen() {
                         disabled={isLoading}
                     >
                         <Text style={styles.logInButtonText}>
-                            {"Bejelentkezés"}
+                            {"Log in"}
                         </Text>
                     </Pressable>
                 </KeyboardStickyView>

@@ -23,15 +23,15 @@ export default function EventCard({
 
     return (
         <View style={styles.container}>
-            <Text style={styles.eventText}>{"Esemény: " + event.name}</Text>
+            <Text style={styles.eventText}>{"Event: " + event.name}</Text>
             <Text style={styles.eventText}>
-                {"Helyszín: " + event.location}
+                {"Location: " + event.location}
             </Text>
             <Text style={styles.eventText}>
-                {"Ország: " + (event.country ?? "-")}
+                {"Country: " + (event.country ?? "-")}
             </Text>
             <Text style={styles.eventText}>
-                {"Férőhelyek: " + (event.capacity ?? "-")}
+                {"Capacity: " + (event.capacity ?? "-")}
             </Text>
             <View style={styles.buttonContainer}>
                 <Pressable
@@ -44,7 +44,7 @@ export default function EventCard({
                         pressed && styles.actionButtonPressed,
                     ]}
                 >
-                    <Text style={styles.buttonText}>Szerkesztés</Text>
+                    <Text style={styles.buttonText}>Edit</Text>
                 </Pressable>
                 <Pressable
                     style={({ pressed }) => [
@@ -59,7 +59,7 @@ export default function EventCard({
                     {isDeleting ? (
                         <ActivityIndicator color="#FFFFFF" />
                     ) : (
-                        <Text style={styles.buttonText}>Törlés</Text>
+                        <Text style={styles.buttonText}>Delete</Text>
                     )}
                 </Pressable>
             </View>

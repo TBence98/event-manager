@@ -31,7 +31,7 @@ export default function EventsScreen() {
 
     useEffect(() => {
         if (error) {
-            Alert.alert("Az események betöltése sikertelen");
+            Alert.alert("Failed to load events");
             clearError();
         }
     }, [clearError, error]);
@@ -46,8 +46,8 @@ export default function EventsScreen() {
                 await deleteEventById(id);
             } catch (err) {
                 Alert.alert(
-                    "Törlés sikertelen",
-                    err instanceof Error ? err.message : "Ismeretlen hiba",
+                    "Delete failed",
+                    err instanceof Error ? err.message : "Unknown error",
                 );
             }
         },
@@ -82,7 +82,7 @@ export default function EventsScreen() {
                 onEndReached={loadMore}
                 onEndReachedThreshold={0.4}
                 ListHeaderComponent={() => (
-                    <Text style={styles.title}>Események</Text>
+                    <Text style={styles.title}>Events</Text>
                 )}
                 ListFooterComponent={
                     isLoadingMore ? (
