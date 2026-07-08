@@ -1,4 +1,4 @@
-import EventCard from "@/components/EventCard";
+import EventCard from "@/components/event-card";
 import LoaderScreen from "@/components/loader-screen";
 import { Screen } from "@/components/screen";
 import { useEvents } from "@/store/events";
