@@ -31,6 +31,10 @@ export default function StackLayout() {
                             headerLeft: () => <HeaderLogOutButton />,
                         }}
                     />
+                    <Stack.Screen
+                        name="events/create-event"
+                        options={{ headerTitle: "" }}
+                    />
                 </Stack.Protected>
             </Stack>
         </KeyboardProvider>

@@ -1,5 +1,6 @@
 import { MOCK_EVENTS } from "@/api/mock-events";
 import type {
+    CreateEventPayload,
     Event,
     FetchEventsParams,
     FetchEventsResponse,
@@ -20,6 +21,15 @@ let eventsStore: Event[] = [...MOCK_EVENTS];
 
 function simulateNetworkDelay(): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, MOCK_NETWORK_DELAY_MS));
+}
+
+function generateEventId(): string {
+    const maxId = eventsStore.reduce((max, event) => {
+        const numericId = Number.parseInt(event.id, 10);
+        return Number.isNaN(numericId) ? max : Math.max(max, numericId);
+    }, 0);
+
+    return String(maxId + 1);
 }
 
 function normalizeFetchParams(params: FetchEventsParams = {}): {
@@ -87,6 +97,28 @@ export async function fetchEvents(
     });
 
     return response;
+}
+
+/**
+ * Mock REST endpoint: POST /events
+ */
+export async function createEvent(
+    payload: CreateEventPayload,
+): Promise<Event> {
+    console.log("[API] createEvent request", payload);
+
+    await simulateNetworkDelay();
+
+    const event: Event = {
+        id: generateEventId(),
+        ...payload,
+    };
+
+    eventsStore.unshift(event);
+
+    console.log("[API] createEvent success", { id: event.id });
+
+    return event;
 }
 
 /**
