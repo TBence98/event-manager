@@ -7,7 +7,7 @@ import type {
     UpdateEventPayload,
 } from "@/types/event";
 
-const MOCK_NETWORK_DELAY_MS = 600;
+const MOCK_NETWORK_DELAY_MS = 900;
 const DEFAULT_LIMIT = 10;
 
 export class EventsApiError extends Error {
@@ -103,9 +103,7 @@ export async function fetchEvents(
 /**
  * Mock REST endpoint: POST /events
  */
-export async function createEvent(
-    payload: CreateEventPayload,
-): Promise<Event> {
+export async function createEvent(payload: CreateEventPayload): Promise<Event> {
     console.log("[API] createEvent request", payload);
 
     await simulateNetworkDelay();

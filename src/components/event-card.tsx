@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         backgroundColor: "#FFFFFF",
         gap: 16,
-        boxShadow: "0px 2px 8px 0px rgba(0, 0, 0, 0.0.06)",
+        boxShadow: "0px 2px 8px 0px rgba(0, 0, 0, 0.06)",
     },
     eventName: {
         fontSize: 20,

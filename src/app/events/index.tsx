@@ -41,15 +41,30 @@ export default function EventsScreen() {
     }, [loadInitial]);
 
     const handleDelete = useCallback(
-        async (id: string) => {
-            try {
-                await deleteEventById(id);
-            } catch (err) {
-                Alert.alert(
-                    "Delete failed",
-                    err instanceof Error ? err.message : "Unknown error",
-                );
-            }
+        (id: string) => {
+            Alert.alert(
+                "Delete event",
+                "Are you sure you want to delete this event?",
+                [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: async () => {
+                            try {
+                                await deleteEventById(id);
+                            } catch (err) {
+                                Alert.alert(
+                                    "Delete failed",
+                                    err instanceof Error
+                                        ? err.message
+                                        : "Unknown error",
+                                );
+                            }
+                        },
+                    },
+                ],
+            );
         },
         [deleteEventById],
     );
