@@ -15,14 +15,9 @@ import {
     View,
 } from "react-native";
 import {
+    KeyboardAwareScrollView,
     KeyboardStickyView,
-    useReanimatedKeyboardAnimation,
 } from "react-native-keyboard-controller";
-import Animated, {
-    interpolate,
-    useAnimatedStyle,
-    useDerivedValue,
-} from "react-native-reanimated";
 
 export default function LogInScreen() {
     const logIn = useAuth((state) => state.logIn);
@@ -34,16 +29,6 @@ export default function LogInScreen() {
     }>({});
     const [authError, setAuthError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-
-    const { progress } = useReanimatedKeyboardAnimation();
-
-    const offset = useDerivedValue(() => {
-        return interpolate(progress.value, [0, 1], [0, 112]);
-    });
-
-    const keyboardAwareStyle = useAnimatedStyle(() => ({
-        transform: [{ translateY: -offset.value }],
-    }));
 
     useEffect(() => {
         if (authError) {
@@ -84,11 +69,11 @@ export default function LogInScreen() {
     return (
         <Screen edges={["top", "bottom"]}>
             <Pressable style={styles.container} onPress={Keyboard.dismiss}>
-                <Animated.View
-                    style={[
-                        Platform.OS === "android" && keyboardAwareStyle,
-                        styles.content,
-                    ]}
+                <KeyboardAwareScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={styles.scrollContent}
+                    bottomOffset={Platform.OS === "ios" ? 120 : 80}
+                    keyboardShouldPersistTaps="handled"
                 >
                     <Text style={styles.title}>Log in to your account</Text>
                     <View style={styles.textInputContainer}>
@@ -148,12 +133,13 @@ export default function LogInScreen() {
                             ) : null}
                         </View>
                     </View>
-                </Animated.View>
-                <KeyboardStickyView offset={{ opened: 16 }}>
+                </KeyboardAwareScrollView>
+                <KeyboardStickyView
+                    offset={{ opened: Platform.OS === "ios" ? 16 : 0 }}
+                >
                     <Pressable
                         style={({ pressed }) => [
                             styles.logInButton,
-                            Platform.OS === "android" && { marginBottom: 16 },
                             pressed && styles.loginButtonPressed,
                             isLoading && styles.loginButtonDisabled,
                         ]}
@@ -170,7 +156,8 @@ export default function LogInScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, paddingHorizontal: 16 },
-    content: { flex: 1 },
+    scrollView: { flex: 1 },
+    scrollContent: { flexGrow: 1 },
     title: { marginTop: 40, fontSize: 42, fontWeight: 700, width: "70%" },
     textInputContainer: { marginTop: 40, gap: 28 },
     textInputLabelContainer: { gap: 4 },
