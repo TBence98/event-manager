@@ -3,11 +3,16 @@ import { useState } from "react";
 import {
     ActivityIndicator,
     Keyboard,
+    Platform,
     Pressable,
     StyleSheet,
     Text,
     View,
 } from "react-native";
+import {
+    KeyboardAwareScrollView,
+    KeyboardStickyView,
+} from "react-native-keyboard-controller";
 import EventTextInput from "./event-text-input";
 
 export type EventFormValues = {
@@ -18,6 +23,7 @@ export type EventFormValues = {
 };
 
 type EventFormProps = {
+    title: string;
     onCancel: () => void;
     onSubmit: (values: EventFormValues) => void;
     submitButtonText: string;
@@ -29,6 +35,7 @@ type EventFormProps = {
 };
 
 export default function EventForm({
+    title,
     onCancel,
     onSubmit,
     submitButtonText,
@@ -79,99 +86,115 @@ export default function EventForm({
 
     return (
         <Pressable style={styles.container} onPress={Keyboard.dismiss}>
-            <EventTextInput
-                label="Name"
-                inputValue={nameVal}
-                onTextChange={(text) => {
-                    setNameVal(text);
-                    clearFieldError("name");
-                }}
-                error={errors.name}
-                style={styles.textInputContainer}
-            />
-            <Text style={styles.placeText}>PLACE</Text>
-            <EventTextInput
-                label="City"
-                inputValue={cityVal}
-                onTextChange={(text) => {
-                    setCityVal(text);
-                    clearFieldError("location");
-                }}
-                error={errors.location}
-                maxLength={100}
-                style={styles.textInputContainer}
-            />
-            <EventTextInput
-                label="Country"
-                inputValue={countryVal}
-                onTextChange={(text) => {
-                    setCountryVal(text);
-                    clearFieldError("country");
-                }}
-                error={errors.country}
-                style={styles.textInputContainer}
-            />
-            <EventTextInput
-                label="Capacity"
-                inputValue={capacityVal}
-                onTextChange={(text) => {
-                    setCapacityVal(text);
-                    clearFieldError("capacity");
-                }}
-                error={errors.capacity}
-                style={{
-                    ...styles.textInputContainer,
-                    ...styles.capacityTextInputContainer,
-                }}
-                keyboardType="number-pad"
-            />
-            <View style={styles.buttonContainer}>
-                <Pressable
-                    onPress={onCancel}
-                    style={({ pressed }) => [
-                        styles.button,
-                        pressed && styles.pressed,
-                    ]}
-                >
-                    <Text style={styles.buttonText}>Cancel</Text>
-                </Pressable>
-                <Pressable
-                    onPress={handleSubmit}
-                    disabled={loading}
-                    style={({ pressed }) => [
-                        styles.button,
-                        styles.submitButton,
-                        pressed && styles.pressed,
-                    ]}
-                >
-                    {loading ? (
-                        <ActivityIndicator color="#FFFFFF" />
-                    ) : (
-                        <Text
-                            style={[styles.buttonText, styles.submitButtonText]}
-                        >
-                            {submitButtonText}
-                        </Text>
-                    )}
-                </Pressable>
-            </View>
+            <KeyboardAwareScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                bottomOffset={Platform.OS === "ios" ? 120 : 80}
+                keyboardShouldPersistTaps="handled"
+            >
+                <Text style={styles.title}>{title}</Text>
+                <EventTextInput
+                    label="Name"
+                    inputValue={nameVal}
+                    onTextChange={(text) => {
+                        setNameVal(text);
+                        clearFieldError("name");
+                    }}
+                    error={errors.name}
+                    style={styles.textInputContainer}
+                />
+                <Text style={styles.placeText}>PLACE</Text>
+                <EventTextInput
+                    label="City"
+                    inputValue={cityVal}
+                    onTextChange={(text) => {
+                        setCityVal(text);
+                        clearFieldError("location");
+                    }}
+                    error={errors.location}
+                    maxLength={100}
+                    style={styles.textInputContainer}
+                />
+                <EventTextInput
+                    label="Country"
+                    inputValue={countryVal}
+                    onTextChange={(text) => {
+                        setCountryVal(text);
+                        clearFieldError("country");
+                    }}
+                    error={errors.country}
+                    style={styles.textInputContainer}
+                />
+                <EventTextInput
+                    label="Capacity"
+                    inputValue={capacityVal}
+                    onTextChange={(text) => {
+                        setCapacityVal(text);
+                        clearFieldError("capacity");
+                    }}
+                    error={errors.capacity}
+                    style={{
+                        ...styles.textInputContainer,
+                        ...styles.capacityTextInputContainer,
+                    }}
+                    keyboardType="number-pad"
+                />
+            </KeyboardAwareScrollView>
+            <KeyboardStickyView offset={{ opened: 16 }}>
+                <View style={styles.buttonContainer}>
+                    <Pressable
+                        onPress={onCancel}
+                        style={({ pressed }) => [
+                            styles.button,
+                            pressed && styles.pressed,
+                        ]}
+                    >
+                        <Text style={styles.buttonText}>Cancel</Text>
+                    </Pressable>
+                    <Pressable
+                        onPress={handleSubmit}
+                        disabled={loading}
+                        style={({ pressed }) => [
+                            styles.button,
+                            styles.submitButton,
+                            pressed && styles.pressed,
+                        ]}
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text
+                                style={[
+                                    styles.buttonText,
+                                    styles.submitButtonText,
+                                ]}
+                            >
+                                {submitButtonText}
+                            </Text>
+                        )}
+                    </Pressable>
+                </View>
+            </KeyboardStickyView>
         </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { width: "100%" },
+    container: { flex: 1, width: "100%" },
+    scrollView: { flex: 1 },
+    scrollContent: { flexGrow: 1 },
+    title: { marginVertical: 28, fontSize: 24, fontWeight: 600 },
     placeText: { marginTop: 12, marginBottom: 4, fontWeight: 700 },
     textInputContainer: {
         marginBottom: 12,
     },
     capacityTextInputContainer: { marginTop: 24, width: "40%" },
     buttonContainer: {
-        marginTop: 8,
         flexDirection: "row",
         gap: 32,
         alignItems: "center",
         justifyContent: "center",
+        paddingVertical: 8,
     },
     button: {
         alignItems: "center",

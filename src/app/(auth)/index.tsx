@@ -7,13 +7,22 @@ import { useEffect, useState } from "react";
 import {
     Alert,
     Keyboard,
+    Platform,
     Pressable,
     StyleSheet,
     Text,
     TextInput,
     View,
 } from "react-native";
-import { KeyboardStickyView } from "react-native-keyboard-controller";
+import {
+    KeyboardStickyView,
+    useReanimatedKeyboardAnimation,
+} from "react-native-keyboard-controller";
+import Animated, {
+    interpolate,
+    useAnimatedStyle,
+    useDerivedValue,
+} from "react-native-reanimated";
 
 export default function LogInScreen() {
     const logIn = useAuth((state) => state.logIn);
@@ -25,6 +34,16 @@ export default function LogInScreen() {
     }>({});
     const [authError, setAuthError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    const { progress } = useReanimatedKeyboardAnimation();
+
+    const offset = useDerivedValue(() => {
+        return interpolate(progress.value, [0, 1], [0, 112]);
+    });
+
+    const keyboardAwareStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: -offset.value }],
+    }));
 
     useEffect(() => {
         if (authError) {
@@ -65,7 +84,12 @@ export default function LogInScreen() {
     return (
         <Screen edges={["top", "bottom"]}>
             <Pressable style={styles.container} onPress={Keyboard.dismiss}>
-                <View style={styles.content}>
+                <Animated.View
+                    style={[
+                        Platform.OS === "android" && keyboardAwareStyle,
+                        styles.content,
+                    ]}
+                >
                     <Text style={styles.title}>Log in to your account</Text>
                     <View style={styles.textInputContainer}>
                         <View style={styles.textInputLabelContainer}>
@@ -101,7 +125,8 @@ export default function LogInScreen() {
                             <TextInput
                                 style={[
                                     styles.textInput,
-                                    fieldErrors.password && styles.textInputError,
+                                    fieldErrors.password &&
+                                        styles.textInputError,
                                 ]}
                                 placeholder="password"
                                 value={password}
@@ -123,20 +148,19 @@ export default function LogInScreen() {
                             ) : null}
                         </View>
                     </View>
-                </View>
+                </Animated.View>
                 <KeyboardStickyView offset={{ opened: 16 }}>
                     <Pressable
                         style={({ pressed }) => [
                             styles.logInButton,
+                            Platform.OS === "android" && { marginBottom: 16 },
                             pressed && styles.loginButtonPressed,
                             isLoading && styles.loginButtonDisabled,
                         ]}
                         onPress={handleLogIn}
                         disabled={isLoading}
                     >
-                        <Text style={styles.logInButtonText}>
-                            {"Log in"}
-                        </Text>
+                        <Text style={styles.logInButtonText}>{"Log in"}</Text>
                     </Pressable>
                 </KeyboardStickyView>
             </Pressable>
